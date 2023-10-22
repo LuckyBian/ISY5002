@@ -1,7 +1,12 @@
 import cv2
 from flask import Flask, Response, render_template
+from SGLE.test2 import Tester
+import torch
+import numpy as np
 
 app = Flask(__name__)
+
+enhancer = Tester()
 
 class Camera:
     def __init__(self):
@@ -10,7 +15,10 @@ class Camera:
     def get_frame(self):
         ret, frame = self.cap.read()
         if ret:
-            ret, jpeg = cv2.imencode('.jpg', frame)
+            frame = frame.astype(np.uint8)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            processed_frame, _ = enhancer.inference(frame_rgb)
+            ret, jpeg = cv2.imencode('.jpg', processed_frame)
             if ret:
                 return jpeg.tobytes()
 
