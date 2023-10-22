@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Stream</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        
+        div {
+            width: 70%; /* Adjust as needed */
+            max-width: 800px; /* Adjust as needed */
+            border: 1px solid #ccc;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+
+        img {
+            width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
+    </div>
+    
+</body>
+</html>
