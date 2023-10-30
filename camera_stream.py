@@ -18,7 +18,10 @@ class Camera:
             frame = frame.astype(np.uint8)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             processed_frame, _ = enhancer.inference(frame_rgb)
-            ret, jpeg = cv2.imencode('.jpg', processed_frame)
+            denoised_frame = cv2.medianBlur(processed_frame, ksize=5)
+        
+            ret, jpeg = cv2.imencode('.jpg', denoised_frame)
+            #ret, jpeg = cv2.imencode('.jpg', processed_frame)
             if ret:
                 return jpeg.tobytes()
 
