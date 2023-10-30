@@ -13,7 +13,9 @@ device = get_device()
 class Trainer():
     def __init__(self):
         self.scale_factor = args.scale_factor
+
         self.net = model.enhance_net_nopool(self.scale_factor, conv_type=args.conv_type).to(device)
+        
         self.seg = fpn(args.num_of_SegClass).to(device)
         self.seg_criterion = FocalLoss(gamma=2).to(device)
         self.train_dataset = dataloader.lowlight_loader(args.lowlight_images_path)
@@ -74,18 +76,22 @@ class Trainer():
             for iteration, img_lowlight in enumerate(self.train_loader):
 
                 img_lowlight = img_lowlight.to(device)
+
                 enhanced_image, A = self.net(img_lowlight)
+
                 loss = self.get_loss(A, enhanced_image, img_lowlight, self.E)
 
                 self.optimizer.zero_grad()
+
                 loss.backward()
+
                 torch.nn.utils.clip_grad_norm(self.net.parameters(), self.grad_clip_norm)
                 self.optimizer.step()
 
                 if ((iteration + 1) % self.display_iter) == 0:
                     print("Loss at iteration", iteration + 1, ":", loss.item())
                 if ((iteration + 1) % self.snapshot_iter) == 0:
-                    torch.save(self.net.state_dict(), self.snapshots_folder + "Epoch" + str(epoch) + '.pth')
+                    torch.save(self.net.state_dict(), self.snapshots_folder + 'model.pth')
 
 
 

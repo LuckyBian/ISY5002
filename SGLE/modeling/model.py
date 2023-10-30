@@ -121,15 +121,4 @@ class enhance_net_nopool(nn.Module):
 
         return enhance_image, x_r
 
-        # This is for vis ONLY
-        #x_r = -3 * x_r.squeeze(0).permute(1, 2, 0)
-
-        #plt.imshow(x_r)
-        # plt.show()
-        # plt.close()
-
-        #plt.savefig('test.svg')
-
-        #sys.exit(0)
-
 
