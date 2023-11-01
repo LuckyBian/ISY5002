@@ -1,58 +1,45 @@
 import cv2
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, request, jsonify
 from SGLE.test2 import Tester
 import torch
 import numpy as np
-import torchvision.transforms as transforms
-from PIL import Image
-from denoise.src.model import UDnCNN
-from denoise.src import utils
+import base64
 
 app = Flask(__name__)
 
 enhancer = Tester()
 
-
-checkpoint = torch.load('denoise/model/checkpoint.pth.tar', map_location=torch.device('cpu'))
-model = UDnCNN(6, 64)
-model.load_state_dict(checkpoint['Net']) 
-model.eval()  # 设置为评估模式
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = model.to(device)
-
 class Camera:
     def __init__(self):
-        self.cap = cv2.VideoCapture(0)  # 使用 OpenCV 来读取摄像头
+        self.cap = cv2.VideoCapture(0)
+        self.camera_available = self.cap.isOpened()  # Check if the camera is available
+        if not self.camera_available:
+            print("Camera not found or cannot be opened")
+
 
     def get_frame(self):
-        ret, frame = self.cap.read()
-        if ret:
-            frame = frame.astype(np.uint8)
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            processed_frame, _ = enhancer.inference(frame_rgb)
-        
-        # 图像增强后的处理
-            img_pil = Image.fromarray(processed_frame)
-            transform = transforms.Compose([
-                transforms.Resize((300, 300)),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            ])
-            img_tensor = transform(img_pil).unsqueeze(0).to(device)
+        if self.camera_available:
+            try:
+                ret, frame = self.cap.read()
+                if ret:
+                    frame = frame.astype(np.uint8)
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    processed_frame, _ = enhancer.inference(frame_rgb)
+                    ret, jpeg = cv2.imencode('.jpg', processed_frame)
+                    if ret:
+                        return jpeg.tobytes()
+            except Exception as e:
+                # If an exception occurs, you can handle the error here or simply return None
+                pass
 
-        # 降噪处理
-            with torch.no_grad():
-                denoised_img_tensor = model(img_tensor)
-            denoised_img = (denoised_img_tensor * 0.5 + 0.5).clamp(0, 1).squeeze(0).cpu().numpy()
-            denoised_img = np.moveaxis(denoised_img, 0, -1)
-            denoised_img = (denoised_img * 255).astype(np.uint8)
-        
-        # 将处理后的图像转换回BGR格式以便显示
-            denoised_img_bgr = cv2.cvtColor(denoised_img, cv2.COLOR_RGB2BGR)
-        
-            ret, jpeg = cv2.imencode('.jpg', denoised_img_bgr)
-            if ret:
-                return jpeg.tobytes()
+        # If camera is not available or an error occurred, return an error frame
+        error_message = "Camera not available" if not self.camera_available else "Error occurred"
+        error_frame = np.zeros((300, 500, 3), dtype=np.uint8)  # Increase the frame size
+        cv2.putText(error_frame, error_message, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)  # Adjust text position
+        ret, jpeg = cv2.imencode('.jpg', error_frame)
+        if ret:
+            return jpeg.tobytes()
+
 
 @app.route('/')
 def index():
@@ -68,6 +55,44 @@ def gen(camera):
 def video_feed():
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# 这个路由用于接收并处理上传的图片和视频
+@app.route('/process', methods=['POST'])
+def process():
+    picture = request.files.get('picture')
+    video = request.files.get('video')
+
+    if picture:
+        # 处理上传的图片
+        picture_data = picture.read()
+        picture_array = cv2.imdecode(np.frombuffer(picture_data, np.uint8), -1)
+        picture_gray = cv2.cvtColor(picture_array, cv2.COLOR_BGR2GRAY)
+
+        # 将图片的字节序列转换为Base64编码的字符串
+        picture_preview = 'data:image/jpeg;base64,' + base64.b64encode(cv2.imencode('.jpg', picture_gray)[1]).decode()
+
+        # 返回处理后的图片
+        return jsonify({
+            'picture_preview': picture_preview,
+            'video_preview': None  # 未上传视频时返回空
+        })
+    elif video:
+        # 处理上传的视频
+        video_data = video.read()
+        video_array = cv2.imdecode(np.frombuffer(video_data, np.uint8), -1)
+        video_gray = cv2.cvtColor(video_array, cv2.COLOR_BGR2GRAY)
+
+        # 将视频的字节序列转换为Base64编码的字符串
+        video_preview = 'data:image/jpeg;base64,' + base64.b64encode(cv2.imencode('.jpg', video_gray)[1]).decode()
+
+        # 返回处理后的视频
+        return jsonify({
+            'picture_preview': None,  # 未上传图片时返回空
+            'video_preview': video_preview,
+        })
+    else:
+        return 'Invalid file data'
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True,port=5001)
