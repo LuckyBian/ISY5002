@@ -8,8 +8,7 @@ import torchvision as tv
 import pandas as pd
 from PIL import Image
 from matplotlib import pyplot as plt
-from utils import imshow, NNRegressor
-
+from .utils import imshow, NNRegressor
 
 class UDnCNN(NNRegressor):
 

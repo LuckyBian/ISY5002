@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import nntools as nt
+from . import nntools as nt
 import torch
 from torch import nn
 
