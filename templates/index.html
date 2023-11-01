@@ -8,30 +8,97 @@
             margin: 0;
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             background-color: #f0f0f0;
         }
-        
-        div {
+
+        div, .container {
             width: 70%; /* Adjust as needed */
             max-width: 800px; /* Adjust as needed */
             border: 1px solid #ccc;
             overflow: hidden;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             background-color: white;
+            margin-top: 20px;
         }
 
         img {
             width: 100%;
             display: block;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
+    <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('uploadedImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('videoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const videoElement = document.getElementById('uploadedVideo');
+                videoElement.src = url;
+                videoElement.load();
+            }
+        });
+    });
+
+        function changeContent(type) {
+            // 关闭实时视频流
+            const videoElement = document.querySelector('#liveStream img');
+            if (type !== 'liveStream') {
+                videoElement.src = '';
+            } else {
+                videoElement.src = '{{ url_for('video_feed') }}';
+            }
+
+            // 切换显示内容
+            document.getElementById('liveStream').classList.add('hidden');
+            document.getElementById('uploadImage').classList.add('hidden');
+            document.getElementById('uploadVideo').classList.add('hidden');
+
+            document.getElementById(type).classList.remove('hidden');
+        }
+    
+    </script>
 </head>
 <body>
-    <div>
+    <button onclick="changeContent('liveStream')">实时画面</button>
+    <button onclick="changeContent('uploadImage')">上传图片</button>
+    <button onclick="changeContent('uploadVideo')">上传视频</button>
+
+    <div id="liveStream" class="container">
         <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
     </div>
+
+    <div id="uploadImage" class="content hidden">
+        <h3>Upload an Image</h3>
+        <input type="file" id="imageInput" accept="image/*">
+        <br><br>
+        <img id="uploadedImage" style="max-width: 100%;" alt="Uploaded Image will appear here">
+    </div>
     
+    <div id="uploadVideo" class="content hidden">
+        <h3>Upload a Video</h3>
+        <input type="file" id="videoInput" accept="video/*">
+        <br><br>
+        <video id="uploadedVideo" style="max-width: 100%;" controls>
+            Your browser does not support the video tag.
+        </video>
+    </div>
 </body>
 </html>
