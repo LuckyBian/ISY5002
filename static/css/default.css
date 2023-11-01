@@ -190,8 +190,10 @@ table {
   border-collapse: collapse; }
   
 .preview-image {
-    max-width: 100%; /* 设置图像最大宽度为父容器宽度 */
-    max-height: 300px; /* 设置图像最大高度为300像素，你可以根据需要进行调整 */
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 caption {

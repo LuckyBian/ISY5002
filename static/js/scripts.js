@@ -1,13 +1,12 @@
 $(function () {
-
-    // init feather icons
+    // 初始化 feather icons
     feather.replace();
 
-    // init tooltip & popovers
+    // 初始化 tooltip & popovers
     $('[data-toggle="tooltip"]').tooltip();
     $('[data-toggle="popover"]').popover();
 
-    // page scroll
+    // 页面滚动
     $('a.page-scroll').bind('click', function (event) {
         var $anchor = $(this);
         $('html, body').stop().animate({
@@ -16,7 +15,7 @@ $(function () {
         event.preventDefault();
     });
 
-    // slick slider
+    // Slick 轮播
     $('.slick-about').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -26,11 +25,11 @@ $(function () {
         arrows: false
     });
 
-    //toggle scroll menu
+    // 切换滚动菜单
     var scrollTop = 0;
     $(window).scroll(function () {
         var scroll = $(window).scrollTop();
-        //adjust menu background
+        // 调整菜单背景
         if (scroll > 80) {
             if (scroll > scrollTop) {
                 $('.smart-scroll').addClass('scrolling').removeClass('up');
@@ -38,13 +37,13 @@ $(function () {
                 $('.smart-scroll').addClass('up');
             }
         } else {
-            // remove if scroll = scrollTop
+            // 如果滚动位置等于顶部则移除类
             $('.smart-scroll').removeClass('scrolling').removeClass('up');
         }
 
         scrollTop = scroll;
 
-        // adjust scroll to top
+        // 调整滚动到顶部按钮
         if (scroll >= 600) {
             $('.scroll-top').addClass('active');
         } else {
@@ -53,7 +52,7 @@ $(function () {
         return false;
     });
 
-    // scroll top top
+    // 滚动到顶部
     $('.scroll-top').click(function () {
         $('html, body').stop().animate({
             scrollTop: 0
@@ -61,136 +60,144 @@ $(function () {
     });
 
     $('#show-image-button').click(function () {
-        // Toggle the visibility of the camera stream div
+        // 切换相机流 div 的可见性
         var cameraStreamDiv = $('#camera-stream-div');
         cameraStreamDiv.toggle();
     });
 
-// Picture button click event
-$("#picture-upload").change(function (e) {
-    // 获取用户选择的文件
-    var file = e.target.files[0];
-
-    // 检查文件类型
-    if (file.type.startsWith('image/')) {
-        // 如果是图片文件，创建一个 FileReader 对象来读取文件内容
-        var reader = new FileReader();
-
-        // 定义 FileReader 的加载完成事件处理程序
-        reader.onload = function (event) {
-            // 创建一个新的图像元素
-            var image = document.createElement('img');
-            image.src = event.target.result;
-
-            // 添加 CSS 类以限制图像大小
-            image.classList.add('preview-image');
-
-            // 找到 new-content-area 元素
-            var newContentArea = document.getElementById('new-content-area');
-
-            // 清空内容
-            newContentArea.innerHTML = '';
-
-            // 添加图像到 new-content-area
-            newContentArea.appendChild(image);
-        };
-
-        // 读取文件内容
-        reader.readAsDataURL(file);
-    } else {
-        alert('请选择图片文件');
-    }
-});
-
-
-
-
-
-
-$(document).ready(function () {
-    // 设置初始按钮状态
-    $('#picture-button').addClass('active');
-
-    // 处理按钮点击事件
-    $('#picture-button, #video-button, #camera-button').click(function () {
-        // 移除所有按钮的 active 类
-        $('#picture-button, #video-button, #camera-button').removeClass('active');
-
-        // 清空 new-content-area 的内容
-        var newContentArea = document.getElementById('new-content-area');
-        newContentArea.innerHTML = '';
-
-        // 清空已上传的文件
-        $("#picture-upload").val(''); // 清空图片文件输入
-        $("#video-upload").val(''); // 清空视频文件输入
-
-        // 将点击的按钮设为 active
-        $(this).addClass('active');
-
-        // 处理每个按钮的点击事件
-        if ($(this).is('#picture-button')) {
-            $("#picture-upload").show();
-            $("#video-upload").hide();
-            $("#camera-stream-div2").hide();
-            $("#result-preview-text").text("Picture result preview");
-            $("#convert-button").show();
-            // $("#picture-preview").show();
-            $("#video-preview").hide();
-        } else if ($(this).is('#video-button')) {
-            $("#video-upload").show();
-            $("#picture-upload").hide();
-            $("#camera-stream-div2").hide();
-            $("#result-preview-text").text("Video result preview");
-            $("#convert-button").show();
-            $("#picture-preview").hide();
-            // $("#video-preview").show();
-        } else if ($(this).is('#camera-button')) {
-            $("#picture-upload").hide();
-            $("#video-upload").hide();
-            $("#result-preview-text").text("Real-time result preview");
-            $("#convert-button").hide();
-            $("#camera-stream-div2").show();
-            $("#picture-preview").hide();
-            $("#video-preview").hide();
-        }
-        
-    });
-    $('#picture-button').click();
-    $('#picture-preview').hide();
-
-});
-
-// 修改 Convert 按钮的点击事件
-$('#convert-button').click(function() {
-    // 创建一个 FormData 对象
-    var formData = new FormData();
-
-    if ($('#picture-upload')[0].files.length > 0) {
-        // 用户上传了图片文件
-        formData.append('picture', $('#picture-upload')[0].files[0]);
-        $("#picture-preview").show();
-    } else if ($('#video-upload')[0].files.length > 0) {
-        // 用户上传了视频文件
-        formData.append('video', $('#video-upload')[0].files[0]);
-        $("#video-preview").show();
-    } else {
-        alert('请选择图片或视频文件');
-        return;
-    }
-
-    $.ajax({
-        type: 'POST',
-        url: '/process',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(data) {
-            // 显示处理后的图片和视频
-            $('#picture-preview').attr('src', data.picture_preview);
-            $('#video-preview').attr('src', data.video_preview);
+    // 图片按钮点击事件
+    $("#picture-upload").change(function (e) {
+        var file = e.target.files[0];
+        if (file.type.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var image = document.createElement('img');
+                image.src = event.target.result;
+                image.classList.add('preview-image');
+                var newContentArea = document.getElementById('new-content-area');
+                newContentArea.innerHTML = '';
+                newContentArea.appendChild(image);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload an image file');
         }
     });
-});
 
+    $("#video-upload").change(function (e) {
+        var file = e.target.files[0];
+        if (file.type.startsWith('video/')) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var video = document.createElement('video');
+                video.src = event.target.result;
+                video.controls = true;
+                video.classList.add('preview-image');
+                var newContentArea = document.getElementById('new-content-area');
+                newContentArea.innerHTML = '';
+                newContentArea.appendChild(video);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload a video file');
+        }
+    });
     
+
+    $(document).ready(function () {
+        $('#picture-button').addClass('active');
+        $('#picture-button, #video-button, #camera-button').click(function () {
+            $('#picture-button, #video-button, #camera-button').removeClass('active');
+            var newContentArea = document.getElementById('new-content-area');
+            newContentArea.innerHTML = '';
+            $("#picture-upload").val('');
+            $("#video-upload").val('');
+            $(this).addClass('active');
+            if ($(this).is('#picture-button')) {
+                $("#picture-upload").show();
+                $("#video-upload").hide();
+                $("#camera-stream-div2").hide();
+                $("#result-preview-text").text("Picture result preview");
+                $("#convert-button").show();
+                $("#picture-preview").hide();
+                $("#video-preview").hide();
+            } else if ($(this).is('#video-button')) {
+                $("#video-upload").show();
+                $("#picture-upload").hide();
+                $("#camera-stream-div2").hide();
+                $("#result-preview-text").text("Video result preview");
+                $("#convert-button").show();
+                $("#picture-preview").hide();
+                $("#video-preview").hide();
+            } else if ($(this).is('#camera-button')) {
+                $("#picture-upload").hide();
+                $("#video-upload").hide();
+                $("#result-preview-text").text("Real-time result preview");
+                $("#convert-button").hide();
+                $("#camera-stream-div2").show();
+                $("#picture-preview").hide();
+                $("#video-preview").hide();
+            }
+        });
+        $('#picture-button').click();
+        $('#picture-preview').hide();
+    });
+
+
+    $('#convert-button').click(function() {
+        // 创建一个 FormData 对象
+        var formData = new FormData();
+    
+        if ($('#picture-upload')[0].files.length > 0) {
+            // 用户上传了图片文件
+            formData.append('picture', $('#picture-upload')[0].files[0]);
+            $("#picture-preview").show();
+    
+            $.ajax({
+                type: 'POST',
+                url: '/process',  // 使用处理图片的端口
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    // 从响应数据中获取宽度和高度信息
+                    var imageWidth = data.image_width;
+                    var imageHeight = data.image_height;
+            
+                    // 获取图片元素
+                    var picturePreview = document.getElementById("picture-preview");
+            
+                    // 将宽度和高度信息应用于生成图像
+                    picturePreview.src = data.picture_preview;
+                    picturePreview.width = imageWidth;
+                    picturePreview.height = imageHeight;
+            
+                    // 显示处理后的图片
+                    $('#picture-preview').attr('src', data.picture_preview);
+                }
+            });
+        } else if ($('#video-upload')[0].files.length > 0) {
+            // 用户上传了视频文件
+            formData.append('video', $('#video-upload')[0].files[0]);
+            
+    
+            $.ajax({
+                type: 'POST',
+                url: '/process_video',  // 使用处理视频的端口
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    // 处理视频的响应
+                    // 根据需要在这里添加视频的处理逻辑
+                    $("#video-preview").show();
+                    $('#video-preview').attr('src', data.processed_video_path);
+                    
+                }
+            });
+        } else {
+            alert('请选择图片或视频文件');
+            return;
+        }
+    });
 });
