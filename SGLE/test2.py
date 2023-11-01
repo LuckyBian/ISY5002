@@ -17,7 +17,7 @@ class Tester():
         self.net = model.enhance_net_nopool(self.scale_factor, conv_type='dsc').to(device)
         
         # 指定模型权重的路径
-        self.weight_path = 'SGLE/weight/Epoch99.pth'
+        self.weight_path = 'SGLE/weight/model.pth'
         self.net.load_state_dict(torch.load(self.weight_path, map_location=device))
 
     def inference(self, input_data):

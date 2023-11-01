@@ -52,8 +52,11 @@ class DSC(nn.Module):
         return out
 
 
-class enhance_net_nopool(nn.Module):
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
+class enhance_net_nopool(nn.Module):
     def __init__(self, scale_factor, conv_type='dsc'):
         super(enhance_net_nopool, self).__init__()
 
@@ -72,19 +75,21 @@ class enhance_net_nopool(nn.Module):
         else:
             print("conv type is not available")
 
-        #   zerodce DWC + p-shared
+        # Encoder
         self.e_conv1 = self.conv(3, number_f)
-
         self.e_conv2 = self.conv(number_f, number_f)
         self.e_conv3 = self.conv(number_f, number_f)
         self.e_conv4 = self.conv(number_f, number_f)
 
-        self.e_conv5 = self.conv(number_f * 2, number_f)
-        self.e_conv6 = self.conv(number_f * 2, number_f)
-        self.e_conv7 = self.conv(number_f * 2, 3)
+        # Middle
+        self.middle_conv = self.conv(number_f, number_f)
+
+        # Decoder
+        self.d_conv1 = self.conv(number_f * 2, number_f)
+        self.d_conv2 = self.conv(number_f * 2, number_f)
+        self.d_conv3 = self.conv(number_f * 2, 3)
 
     def enhance(self, x, x_r):
-
         x = x + x_r * (torch.pow(x, 2) - x)
         x = x + x_r * (torch.pow(x, 2) - x)
         x = x + x_r * (torch.pow(x, 2) - x)
@@ -93,7 +98,6 @@ class enhance_net_nopool(nn.Module):
         x = x + x_r * (torch.pow(x, 2) - x)
         x = x + x_r * (torch.pow(x, 2) - x)
         enhance_image = x + x_r * (torch.pow(x, 2) - x)
-
         return enhance_image
 
     def forward(self, x):
@@ -102,23 +106,27 @@ class enhance_net_nopool(nn.Module):
         else:
             x_down = F.interpolate(x, scale_factor=1 / self.scale_factor, mode='bilinear')
 
-        # extraction
-        x1 = self.relu(self.e_conv1(x_down))
-        x2 = self.relu(self.e_conv2(x1))
-        x3 = self.relu(self.e_conv3(x2))
-        x4 = self.relu(self.e_conv4(x3))
-        x5 = self.relu(self.e_conv5(torch.cat([x3, x4], 1)))
-        x6 = self.relu(self.e_conv6(torch.cat([x2, x5], 1)))
-        x_r = F.tanh(self.e_conv7(torch.cat([x1, x6], 1)))
+        # Encoder
+        e1 = self.relu(self.e_conv1(x_down))
+        e2 = self.relu(self.e_conv2(e1))
+        e3 = self.relu(self.e_conv3(e2))
+        e4 = self.relu(self.e_conv4(e3))
 
-        if self.scale_factor == 1:
-            x_r = x_r
-        else:
+        # Middle
+        middle = self.relu(self.middle_conv(e4))
+
+        # Decoder
+        d1 = self.relu(self.d_conv1(torch.cat([e3, middle], 1)))
+        d2 = self.relu(self.d_conv2(torch.cat([e2, d1], 1)))
+        x_r = F.tanh(self.d_conv3(torch.cat([e1, d2], 1)))
+
+        if self.scale_factor != 1:
             x_r = self.upsample(x_r)
 
-        # enhancement
+        # Enhancement
         enhance_image = self.enhance(x, x_r)
 
         return enhance_image, x_r
+
 
 
