@@ -33,14 +33,15 @@ class CustomDeepModel(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc_layers(x)
         return x
-download_path = '/poseDetect/'
-torch.hub.set_dir(download_path)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# model = CustomDeepModel(num_classes=3)
-model = ResNet18(num_classes=3).to(device)
-model.load_state_dict(torch.load('poseDetect/model_Resnet18_best.pth', map_location=torch.device('cpu')))
-model=model.to(device)
-model.eval()  # 将模型设置为评估模式
+    
+# download_path = '/poseDetect/'
+# torch.hub.set_dir(download_path)
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# # model = CustomDeepModel(num_classes=3)
+# model = ResNet18(num_classes=3).to(device)
+# model.load_state_dict(torch.load('poseDetect/model_Resnet18_best.pth', map_location=torch.device('cpu')))
+# model=model.to(device)
+# model.eval()
 
 # 预处理新的骨骼图
 def preprocess_image(image_path):
@@ -54,8 +55,7 @@ def preprocess_image(image_path):
     image = image.unsqueeze(0)  # 添加 batch 维度
     return image
 
-# 输入新的骨骼图的文件路径
-# new_image_path = 'dataset/test/1649727706842.jpg'
+# new_image_path = 'E:/NUS/ISY5002-main/ISY5002/static/skeleton.jpg'
 
 # # 预处理图像
 # input_image = preprocess_image(new_image_path)
@@ -71,7 +71,9 @@ def preprocess_image(image_path):
 #     end=time()
 
 # # 获取预测结果
+
 # _, predicted_class = torch.max(outputs, 1)
+
 
 # # 打印预测结果
 # print('0 for fall, 1 for normal, 2 for violent')

@@ -125,7 +125,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-6">
+        <!-- <div class="row mt-6">
             <div class="col-md-6 mr-auto">
                 <h2>...But Apollolume is more than just a photo/video enhancer.</h2>
                 <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis pulvinar vestibulum. Donec eleifend, sem sed dictum mattis, turpis purus placerat eros.</p>
@@ -136,7 +136,7 @@
             <div class="col-md-5" id="camera-stream-div" style="display: none;">
                 <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
             </div>            
-        </div>
+        </div> -->
     </div>
 </section>
 
@@ -173,15 +173,24 @@
                 <input type="file" class="row mb-4" id="picture-upload" name="picture" style="display: none" accept="image/*">
                 <input type="file" class="row mb-4" id="video-upload" name="video" style="display: none" accept="video/*">
                 <div class="col-md-5" id="camera-stream-div2" style="display: none;">
-                    <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
+                    <img id="camera-stream" src="" alt="Camera Stream">
                 </div>
                 <div id="new-content-area">
                     <!-- 这里将显示结果预览的内容 -->
                 </div>
             </div>
-            <div class="col-md-4 mx-auto text-center">
+            <div class="col-md-3 mx-auto text-center">
                 <button class="btn btn-primary" id="convert-button">
                     Convert
+                </button>
+                <button class="btn btn-primary" id="enable-camera-button" style="display: none;">
+                    Enable Camera
+                </button>
+                <button class="btn btn-primary mt-5" id="detect-button" style="display: none;">
+                    Detect
+                </button>
+                <button class="btn btn-primary mt-5" id="stop-button" style="display: none;">
+                    Stop
                 </button>
             </div>
             <div class="col-md-4 mx-auto text-center">
@@ -189,7 +198,7 @@
                     <!-- 这里将显示结果预览的文本 -->
                 </p>
                 <img id="picture-preview" src="" alt="Picture Preview" class="preview-image">
-                <video id="video-preview" class="preview-image"controls></video>
+                <video id="video-preview" class="preview-image"controls style="display: none;"></video>
 
 
             </div>
@@ -224,6 +233,55 @@
             blogSection.scrollIntoView({ behavior: "smooth" });
         });
     });
+
+    document.getElementById("enable-camera-button").addEventListener("click", function() {
+    // 在 "Enable Camera" 按钮点击时更新相机流
+    var cameraStreamUrl = "{{ url_for('video_feed') }}";  // 此处设置相机流的URL
+    document.getElementById("camera-stream").src = cameraStreamUrl;
+
+    document.getElementById("detect-button").addEventListener("click", function() {
+    // 这里触发图像处理函数
+    processAndDisplayImage();
+});
+
+function processAndDisplayImage() {
+    var videoPreview = document.getElementById("video-preview"); // 图像显示区域
+    var resultPreviewText = document.getElementById("result-preview-text"); // 结果文本显示区域
+
+    // 创建一个函数，用于发送Ajax请求并处理图像
+    function processImage() {
+        // 发送Ajax请求获取图像数据
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/video_feed", true);
+        xhr.responseType = "blob"; // 响应类型为二进制数据
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var blob = xhr.response;
+                var url = URL.createObjectURL(blob);
+                
+                // 显示处理后的图像
+                videoPreview.src = url;
+            } else {
+                resultPreviewText.textContent = "An error occurred while processing the image.";
+            }
+        };
+        xhr.send();
+    }
+
+    // 每秒抽取并处理图像
+    var intervalId = setInterval(processImage, 1000);
+
+    // 当用户点击"Stop"按钮时停止图像处理
+    var stopButton = document.getElementById("stop-button");
+    stopButton.addEventListener("click", function() {
+        clearInterval(intervalId); // 停止定时任务
+    });
+}
+
+});
+
+
+    
 
 
 

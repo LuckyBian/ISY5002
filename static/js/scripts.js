@@ -121,6 +121,9 @@ $(function () {
                 $("#convert-button").show();
                 $("#picture-preview").hide();
                 $("#video-preview").hide();
+                $("#enable-camera-button").hide();
+                $("#detect-button").hide();
+                $("#camera-stream").hide();
             } else if ($(this).is('#video-button')) {
                 $("#video-upload").show();
                 $("#picture-upload").hide();
@@ -129,7 +132,12 @@ $(function () {
                 $("#convert-button").show();
                 $("#picture-preview").hide();
                 $("#video-preview").hide();
+                $("#enable-camera-button").hide();
+                $("#detect-button").hide();
+                $("#camera-stream").hide();
             } else if ($(this).is('#camera-button')) {
+                $("#enable-camera-button").show();
+                $("#detect-button").show();
                 $("#picture-upload").hide();
                 $("#video-upload").hide();
                 $("#result-preview-text").text("Real-time result preview");
@@ -137,11 +145,30 @@ $(function () {
                 $("#camera-stream-div2").show();
                 $("#picture-preview").hide();
                 $("#video-preview").hide();
+                $("#camera-stream").hide();
             }
         });
         $('#picture-button').click();
         $('#picture-preview').hide();
     });
+
+    $('#enable-camera-button').click(function() {
+        $("#camera-stream").show();
+        $("#detect-button").show();
+
+    })
+
+    $('#stop-button').click(function() {
+        $("#detect-button").show();
+        $("#stop-button").hide();
+
+    })
+
+    $('#detect-button').click(function() {
+        $("#stop-button").show();
+        $("#detect-button").hide();
+
+    })
 
 
     $('#convert-button').click(function() {
