@@ -244,42 +244,41 @@
     processAndDisplayImage();
 });
 
-function processAndDisplayImage() {
-    var videoPreview = document.getElementById("video-preview"); // 图像显示区域
-    var resultPreviewText = document.getElementById("result-preview-text"); // 结果文本显示区域
-
-    // 创建一个函数，用于发送Ajax请求并处理图像
-    function processImage() {
-        // 发送Ajax请求获取图像数据
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/video_feed", true);
-        xhr.responseType = "blob"; // 响应类型为二进制数据
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var blob = xhr.response;
-                var url = URL.createObjectURL(blob);
-                
-                // 显示处理后的图像
-                videoPreview.src = url;
-            } else {
-                resultPreviewText.textContent = "An error occurred while processing the image.";
-            }
-        };
-        xhr.send();
-    }
-
-    // 每秒抽取并处理图像
-    var intervalId = setInterval(processImage, 1000);
-
-    // 当用户点击"Stop"按钮时停止图像处理
-    var stopButton = document.getElementById("stop-button");
-    stopButton.addEventListener("click", function() {
-        clearInterval(intervalId); // 停止定时任务
-    });
-}
-
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    let counter = 0; // 初始化计数器
+
+    // 每秒执行一次的函数
+    function captureAndDisplayImage() {
+        // 在这里抓取相机流中的图片，更新图片和计数器
+        // 可以使用HTML5的canvas元素来捕获图片
+
+        // 更新图片的src
+        document.getElementById("camera-stream").src = "{{ url_for('video_feed') }}";
+
+        // 更新计数器
+        counter++;
+        document.getElementById("result-preview-text").textContent = "Counter: " + counter;
+    }
+
+    // 当用户点击"Detect"按钮时触发
+    document.getElementById("detect-button").addEventListener("click", function () {
+        // 每秒执行一次captureAndDisplayImage函数
+        const intervalId = setInterval(captureAndDisplayImage, 1000);
+
+        // 隐藏"Detect"按钮，显示"Stop"按钮
+        document.getElementById("detect-button").style.display = "none";
+        document.getElementById("stop-button").style.display = "block";
+
+        // 当用户点击"Stop"按钮时停止计时器
+        document.getElementById("stop-button").addEventListener("click", function () {
+            clearInterval(intervalId); // 停止计时器
+            document.getElementById("detect-button").style.display = "block";
+            document.getElementById("stop-button").style.display = "none";
+        });
+    });
+});
 
     
 
