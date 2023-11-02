@@ -213,6 +213,13 @@ label {
 button {
   border-radius: 0; }
 
+.button-container {
+    position: absolute;
+    top: 70%; /* 距离父元素顶部的垂直距离，可以根据需要进行调整 */
+    left: -3%; /* 距离父元素左侧的水平距离，可以根据需要进行调整 */
+    transform: translate(-50%, -50%); /* 通过将按钮水平和垂直居中来保持固定位置 */
+}
+
 button:focus {
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color; }

@@ -186,12 +186,15 @@
                 <button class="btn btn-primary" id="enable-camera-button" style="display: none;">
                     Enable Camera
                 </button>
-                <button class="btn btn-primary mt-5" id="detect-button" style="display: none;">
-                    Detect
-                </button>
-                <button class="btn btn-primary mt-5" id="stop-button" style="display: none;">
-                    Stop
-                </button>
+                <div class="col-md-3 mx-auto text-center button-container">
+                    <button class="btn btn-primary" id="detect-button" style="display: none;">
+                        Detect
+                    </button>
+                    <button class="btn btn-primary" id="stop-button" style="display: none;">
+                        Stop
+                    </button>
+                </div>
+                
             </div>
             <div class="col-md-4 mx-auto text-center">
                 <p class="text-muted lead" id="result-preview-text">
@@ -241,7 +244,7 @@
 
     document.getElementById("detect-button").addEventListener("click", function() {
     // 这里触发图像处理函数
-    processAndDisplayImage();
+    // processAndDisplayImage();
 });
 
 });
@@ -250,22 +253,64 @@ document.addEventListener("DOMContentLoaded", function () {
     let counter = 0; // 初始化计数器
 
     // 每秒执行一次的函数
-    function captureAndDisplayImage() {
-        // 在这里抓取相机流中的图片，更新图片和计数器
-        // 可以使用HTML5的canvas元素来捕获图片
+    function captureAndSendImage() {
+    // Get the image element
+    const cameraStreamImage = document.getElementById("camera-stream");
 
-        // 更新图片的src
-        document.getElementById("camera-stream").src = "{{ url_for('video_feed') }}";
+    // Create a canvas element to capture the image
+    const canvas = document.createElement("canvas");
+    canvas.width = cameraStreamImage.width;
+    canvas.height = cameraStreamImage.height;
+    const context = canvas.getContext("2d");
+    context.drawImage(cameraStreamImage, 0, 0, canvas.width, canvas.height);
 
-        // 更新计数器
-        counter++;
-        document.getElementById("result-preview-text").textContent = "Counter: " + counter;
+    // Convert the captured image to a data URL
+    const capturedImageDataURL = canvas.toDataURL("image/jpeg");
+
+    // Create a Blob from the data URL
+    const capturedImageBlob = dataURLtoBlob(capturedImageDataURL);
+
+    // Create a FormData object to send the image
+    const formData = new FormData();
+    formData.append("image", capturedImageBlob);
+
+    // Send the image to the backend
+    fetch("/detect", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the backend
+        if (data.predicted_class) {
+            // Update the result preview with the predicted class
+            document.getElementById("result-preview-text").textContent = "Predicted Class: " + data.predicted_class;
+        }
+    })
+    .catch(error => {
+        console.error("Error uploading image: " + error);
+    });
+}
+
+// Function to convert a data URL to a Blob
+function dataURLtoBlob(dataURL) {
+    const parts = dataURL.split(",");
+    const byteString = atob(parts[1]);
+    const mimeString = parts[0].split(":")[1].split(";")[0];
+
+    const arr = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+        arr[i] = byteString.charCodeAt(i);
     }
+
+    return new Blob([arr], { type: mimeString });
+}
+
 
     // 当用户点击"Detect"按钮时触发
     document.getElementById("detect-button").addEventListener("click", function () {
         // 每秒执行一次captureAndDisplayImage函数
-        const intervalId = setInterval(captureAndDisplayImage, 1000);
+        const intervalId = setInterval(captureAndSendImage, 2000);
 
         // 隐藏"Detect"按钮，显示"Stop"按钮
         document.getElementById("detect-button").style.display = "none";
