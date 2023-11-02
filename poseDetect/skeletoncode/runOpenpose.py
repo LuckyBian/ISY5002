@@ -2,6 +2,7 @@ import argparse
 import cv2
 import numpy as np
 from torch import from_numpy, jit
+from torch.jit import ScriptModule
 from poseDetect.skeletoncode.openpose_modules.keypoints import extract_keypoints, group_keypoints
 from poseDetect.skeletoncode.openpose_modules.pose import Pose
 # from action_detect.detect import action_detect\\\
@@ -222,7 +223,7 @@ def get_image(img):
     image = cv2.imread(img, cv2.IMREAD_COLOR)
     return image
 
-def detect_main(video_name='', image_input=''):
+def detect_main(video_name='', image_path = ''):
 
     parser = argparse.ArgumentParser(
         description='''Lightweight human pose estimation python demo.
@@ -237,42 +238,41 @@ def detect_main(video_name='', image_input=''):
 
     #讀取圖片或是圖片文件夾
     parser.add_argument('--images', nargs='+',
-                        default=f'{image_input}',
+                        default='',
                         help='path to input image(s)')
     ######################################################################################################################################################
     parser.add_argument('--cpu', action='store_true', help='run network inference on cpu')
     parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
     parser.add_argument('--code_name', type=str, default='None', help='the name of video')
-    # parser.add_argument('--track', type=int, default=0, help='track pose id in video')
-    # parser.add_argument('--smooth', type=int, default=1, help='smooth pose keypoints')
     args = parser.parse_args()
 
-    if video_name != '':
-        args.code_name = video_name
+    # if video_name != '':
+    #     args.code_name = video_name
+    #
+    # if args.video == '' and args.images == '':
+    #     raise ValueError('Either --video or --image has to be provided')
 
-    if args.video == '' and args.images == '':
-        raise ValueError('Either --video or --image has to be provided')
+    model_path = os.path.join('poseDetect', 'skeletoncode', 'ction_detect', 'checkPoint', 'openpose.jit')
+    net = jit.load(model_path)
 
-    checkpoint_path = os.path.abspath('poseDetect\skeletoncode\ction_detect\checkPoint\openpose.jit')
-    net = jit.load(checkpoint_path)
 
     # *************************************************************************
     # action_net = jit.load(r'.\action_detect\checkPoint\action.jit')
     # ************************************************************************
 
-    #讀取視頻或是圖片，圖片根據路徑
-    if args.video != '':
-        frame_provider = VideoReader(args.video, args.code_name)
-    else:
-        images_dir = []
-        if os.path.isdir(args.images):
-            for img_dir in os.listdir(args.images):
-                images_dir.append(os.path.join(args.images, img_dir))
-            frame_provider = ImageReader(images_dir)
-        else:
-            img = cv2.imread(args.images, cv2.IMREAD_COLOR)
-            frame_provider = [img]
+    # #讀取視頻或是圖片，圖片根據路徑
+    # if args.video != '':
+    #     frame_provider = VideoReader(args.video, args.code_name)
+    # else:
+    #     images_dir = []
+    #     if os.path.isdir(args.images):
+    #         for img_dir in os.listdir(args.images):
+    #             images_dir.append(os.path.join(args.images, img_dir))
+    #         frame_provider = ImageReader(images_dir)
+    #     else:
+    #         img = cv2.imread(args.images, cv2.IMREAD_COLOR)
+    #         frame_provider = [img]
 
         # *************************************************************************
 
@@ -280,6 +280,8 @@ def detect_main(video_name='', image_input=''):
     # camera = VideoReader('rtsp://admin:a1234567@10.34.131.154/cam/realmonitor?channel=1&subtype=0',args.code_name)
 
     # run_demo(net, action_net, frame_provider, args.height_size, True, [])
+
+    frame_provider = [cv2.imread(image_path, cv2.IMREAD_COLOR)]
     start_time = time.time()
     run_demo(net, frame_provider, args.height_size, True, [])
 
@@ -291,5 +293,5 @@ def detect_main(video_name='', image_input=''):
 
 
 # if __name__ == '__main__':
-    # detect_main(image_input='DSC08568.JPG')
+#     detect_main(image_path='DSC08568.JPG')
 

@@ -154,7 +154,7 @@ def video_feed():
 def process():
     picture = request.files.get('picture')
 
-    detect_main(image_input=f'{picture}')
+    detect_main(picture)
     
 
     if picture:
