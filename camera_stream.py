@@ -11,7 +11,8 @@ from denoise.src import utils
 import tempfile
 import os
 import logging
-
+from poseDetect.pose_test import preprocess_image
+from poseDetect.skeletoncode.runOpenpose import detect_main
 
 
 app = Flask(__name__)
@@ -152,7 +153,9 @@ def video_feed():
 @app.route('/process', methods=['POST'])
 def process():
     picture = request.files.get('picture')
-    video = request.files.get('video')
+
+    detect_main(image_input=f'{picture}')
+    
 
     if picture:
         # 处理上传的图片

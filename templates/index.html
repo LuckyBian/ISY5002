@@ -172,7 +172,9 @@
             <div class="col-md-4 mx-auto text-center">
                 <input type="file" class="row mb-4" id="picture-upload" name="picture" style="display: none" accept="image/*">
                 <input type="file" class="row mb-4" id="video-upload" name="video" style="display: none" accept="video/*">
-
+                <div class="col-md-5" id="camera-stream-div2" style="display: none;">
+                    <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
+                </div>
                 <div id="new-content-area">
                     <!-- 这里将显示结果预览的内容 -->
                 </div>
@@ -189,9 +191,7 @@
                 <img id="picture-preview" src="" alt="Picture Preview" class="preview-image">
                 <video id="video-preview" class="preview-image"controls></video>
 
-                <div class="col-md-5" id="camera-stream-div2" style="display: none;">
-                    <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
-                </div>
+
             </div>
         </div>
         
