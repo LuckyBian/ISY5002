@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 checkpoint = torch.load('denoise/model/checkpoint.pth.tar', map_location=torch.device('cpu'))
 model = UDnCNN(6, 64)
 model.load_state_dict(checkpoint['Net']) 
-model.eval()  # 设置为评估模式
+model.eval() 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 
@@ -53,14 +53,14 @@ class Camera:
                     ])
                     img_tensor = transform(img_pil).unsqueeze(0).to(device)
 
-        # 降噪处理
+
                     with torch.no_grad():
                         denoised_img_tensor = model(img_tensor)
                     denoised_img = (denoised_img_tensor * 0.5 + 0.5).clamp(0, 1).squeeze(0).cpu().numpy()
                     denoised_img = np.moveaxis(denoised_img, 0, -1)
                     denoised_img = (denoised_img * 255).astype(np.uint8)
         
-        # 将处理后的图像转换回BGR格式以便显示
+
                     denoised_img_bgr = cv2.cvtColor(denoised_img, cv2.COLOR_RGB2BGR)
         
                     ret, jpeg = cv2.imencode('.jpg', denoised_img_bgr)
@@ -79,7 +79,6 @@ class Camera:
             return jpeg.tobytes()
 
 def process_uploaded_video(input_video, output_video_path):
-    # 保存上传的视频到临时文件
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file.write(input_video.read())
         temp_file_path = temp_file.name
@@ -87,20 +86,14 @@ def process_uploaded_video(input_video, output_video_path):
     cap = cv2.VideoCapture(temp_file_path)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
-    # 使用H.264编解码器
+
     out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'X264'), 30, (frame_width, frame_height))
-
-
-
-
-
 
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        # 在这里对每一帧进行处理
         frame = frame.astype(np.uint8)
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         processed_frame, _ = enhancer.inference(frame_rgb)
@@ -113,7 +106,6 @@ def process_uploaded_video(input_video, output_video_path):
         # ])
         # img_tensor = transform(img_pil).unsqueeze(0).to(device)
 
-        # # 降噪处理
         # with torch.no_grad():
         #     denoised_img_tensor = model(img_tensor)
         # denoised_img = (denoised_img_tensor * 0.5 + 0.5).clamp(0, 1).squeeze(0).cpu().numpy()
@@ -127,7 +119,6 @@ def process_uploaded_video(input_video, output_video_path):
     cap.release()
     out.release()
 
-    # 删除临时文件
     os.remove(temp_file_path)
 
 @app.route('/')
@@ -163,32 +154,27 @@ def detect():
         model.load_state_dict(torch.load('poseDetect/model_Resnet18_best.pth', map_location=torch.device('cpu')))
         model=model.to(device)
         model.eval()
-        # 不再使用临时文件，直接读取上传的图像
+
         picture_data = picture.read()
         picture_array = cv2.imdecode(np.frombuffer(picture_data, np.uint8), -1)
         
-        # 在这里进行图像处理
+
         skeleton_image = process_image(picture_array)
         
-        # 保存骨架图像到静态目录
+ 
         skeleton_image_path = 'static/skeleton.jpg'
         cv2.imwrite(skeleton_image_path, skeleton_image)
 
-        # 预处理图像
         input_image = preprocess_image(skeleton_image_path)
 
-        # 将输入图像移到GPU上（如果可用的话）
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         input_image = input_image.to(device)
 
-        # 使用模型进行预测
         with torch.no_grad():
             outputs = model(input_image)
 
-        # 获取预测结果
         _, predicted_class = torch.max(outputs, 1)
 
-        # 返回处理后的图像路径
         return jsonify({'skeleton_image_path': skeleton_image_path, 'predicted_class': predicted_class.item()})
     except Exception as e:
         app.logger.error(f"Error processing image: {str(e)}")
@@ -202,7 +188,6 @@ def process():
     
 
     try:
-        # 处理上传的图片
         picture_data = picture.read()
         # picture_array = cv2.imdecode(np.frombuffer(picture_data, np.uint8), -1)
         # picture_gray = cv2.cvtColor(picture_array, cv2.COLOR_BGR2GRAY)
@@ -210,13 +195,11 @@ def process():
         picture_array = cv2.imdecode(np.frombuffer(picture_data, np.uint8), -1)
         picture_array_rgb = cv2.cvtColor(picture_array, cv2.COLOR_BGR2RGB)
 
-        # 获取原始图片的宽度和高度
         original_height, original_width, _ = picture_array.shape
 
-        # 计算缩放尺寸以保持原始宽高比，可以根据需要进行缩放
         target_height = 650
         target_width = int(original_width * (target_height / original_height))
-        # frame_rgb = cv2.cvtColor(picture_data, cv2.COLOR_BGR2RGB)
+
         processed_frame, _ = enhancer.inference(picture_array_rgb)
                     
         img_pil = Image.fromarray(processed_frame)
@@ -227,33 +210,29 @@ def process():
         ])
         img_tensor = transform(img_pil).unsqueeze(0).to(device)
 
-        # 降噪处理
         with torch.no_grad():
             denoised_img_tensor = model(img_tensor)
         denoised_img = (denoised_img_tensor * 0.5 + 0.5).clamp(0, 1).squeeze(0).cpu().numpy()
         denoised_img = np.moveaxis(denoised_img, 0, -1)
         denoised_img = (denoised_img * 255).astype(np.uint8)
         
-        # 将处理后的图像转换回BGR格式以便显示
         denoised_img_bgr = cv2.cvtColor(denoised_img, cv2.COLOR_RGB2BGR)
 
         image_width = denoised_img_bgr.shape[1]
         image_height = denoised_img_bgr.shape[0]
 
-        # 将图片的字节序列转换为Base64编码的字符串
         picture_preview = 'data:image/jpeg;base64,' + base64.b64encode(cv2.imencode('.jpg', denoised_img_bgr)[1]).decode()
 
-        # 返回处理后的图片
         return jsonify({
             'picture_preview': picture_preview,
-            'image_width': image_width,  # 传递生成图像的宽度
-            'image_height': image_height  # 传递生成图像的高度
+            'image_width': image_width, 
+            'image_height': image_height 
         })
     except Exception as e:
         app.logger.error(f"Error processing image: {str(e)}")
         return jsonify({'error': 'An error occurred while processing the image'}), 500
 
-# 在'/process_video'路由中发送处理后的视频文件
+
 @app.route('/process_video', methods=['POST'])
 def process_video():
     video = request.files.get('video')
@@ -261,15 +240,12 @@ def process_video():
     if not video:
         return jsonify({'error': 'Video file not provided'}), 400
 
-    # 为处理后的视频创建一个临时文件
     output_video_path = os.path.join('static', 'processed_video.mkv')
 
-    # 处理视频
     process_uploaded_video(video, output_video_path)
 
     logging.info(f'Processed video file path: {output_video_path}')
 
-    # 返回处理后的视频文件
     return jsonify({"processed_video_path": output_video_path})
 
 if __name__ == '__main__':

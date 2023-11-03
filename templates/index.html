@@ -88,9 +88,8 @@
                                 <span data-feather="edit-3" width="35" height="35"></span>
                             </div>
                         </div>
-                        <h5>Create once. Share everywhere.</h5>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum in
-                            nisi commodo, tempus odio a, vestibulum nibh.</p>
+                        <h5>Step1: Take low-light images/videos</h5>
+                        <p class="text-muted">Our application can handel any kind of image imputs and Video files without audio.</p>
                     </div>
                     <div class="col-md-6 box">
                         <div class="icon-box box-success">
@@ -98,9 +97,8 @@
                                 <span data-feather="monitor" width="35" height="35"></span>
                             </div>
                         </div>
-                        <h5>Unlimited devices</h5>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum in
-                            nisi commodo, tempus odio a, vestibulum nibh.</p>
+                        <h5>Step2: Save them on a PC device</h5>
+                        <p class="text-muted">Please do save them as files on your personal computer so that you can upload them into our application.</p>
                     </div>
                     <div class="col-md-6 box">
                         <div class="icon-box box-danger">
@@ -108,9 +106,8 @@
                                 <span data-feather="layout" width="35" height="35"></span>
                             </div>
                         </div>
-                        <h5>Beautiful tempates & layouts</h5>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum in
-                            nisi commodo, tempus odio a, vestibulum nibh.</p>
+                        <h5>Step3: Use our Appololume</h5>
+                        <p class="text-muted">After you get into our application page, please select the function you want to use below, and upload corresponding files.</p>
                     </div>
                     <div class="col-md-6 box">
                         <div class="icon-box box-info">
@@ -118,9 +115,8 @@
                                 <span data-feather="globe" width="35" height="35"></span>
                             </div>
                         </div>
-                        <h5>Available globally</h5>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum in
-                            nisi commodo, tempus odio a, vestibulum nibh.</p>
+                        <h5>Step4: Receive enhanced output</h5>
+                        <p class="text-muted">You can get your enhance photos/videos by simplying clicking on the convert button and wait for a few seconds.</p>
                     </div>
                 </div>
             </div>
@@ -128,7 +124,6 @@
         <!-- <div class="row mt-6">
             <div class="col-md-6 mr-auto">
                 <h2>...But Apollolume is more than just a photo/video enhancer.</h2>
-                <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis pulvinar vestibulum. Donec eleifend, sem sed dictum mattis, turpis purus placerat eros.</p>
                 <button class="btn btn-light" id="show-image-button">
                     Try the live demo
                 </button>                
@@ -141,7 +136,7 @@
 </section>
 
 
-<!--news section-->
+<!--Services section-->
 <section class="py-7 bg-dark section-angle top-left bottom-left" id="Services">
     <div class="container">
         <div class="row justify-content-center mb-4">
@@ -176,7 +171,7 @@
                     <img id="camera-stream" src="" alt="Camera Stream">
                 </div>
                 <div id="new-content-area">
-                    <!-- 这里将显示结果预览的内容 -->
+
                 </div>
             </div>
             <div class="col-md-3 mx-auto text-center">
@@ -198,7 +193,7 @@
             </div>
             <div class="col-md-4 mx-auto text-center">
                 <p class="text-muted lead" id="result-preview-text">
-                    <!-- 这里将显示结果预览的文本 -->
+
                 </p>
                 <img id="picture-preview" src="" alt="Picture Preview" class="preview-image">
                 <video id="video-preview" class="preview-image"controls style="display: none;"></video>
@@ -216,7 +211,7 @@
     <div class="container">
         <div class="row mt-5">
             <div class="col-12 text-muted text-center small-xl">
-                <!-- &copy; <a target="_blank" href="http://www.mobanwang.com/" title="模板王">模板王</a> Knight - All Rights Reserved -->
+
             </div>
         </div>
     </div>
@@ -238,23 +233,22 @@
     });
 
     document.getElementById("enable-camera-button").addEventListener("click", function() {
-    // 在 "Enable Camera" 按钮点击时更新相机流
-    var cameraStreamUrl = "{{ url_for('video_feed') }}";  // 此处设置相机流的URL
+
+    var cameraStreamUrl = "{{ url_for('video_feed') }}"; 
     document.getElementById("camera-stream").src = cameraStreamUrl;
 
     document.getElementById("detect-button").addEventListener("click", function() {
-    // 这里触发图像处理函数
-    // processAndDisplayImage();
+
 });
 
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    let counter = 0; // 初始化计数器
+    let counter = 0; 
 
-    // 每秒执行一次的函数
+
     function captureAndSendImage() {
-    // Get the image element
+
     const cameraStreamImage = document.getElementById("camera-stream");
 
     // Create a canvas element to capture the image
@@ -264,7 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const context = canvas.getContext("2d");
     context.drawImage(cameraStreamImage, 0, 0, canvas.width, canvas.height);
 
-    // Convert the captured image to a data URL
     const capturedImageDataURL = canvas.toDataURL("image/jpeg");
 
     // Create a Blob from the data URL
@@ -282,9 +275,22 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.json())
     .then(data => {
         // Handle the response from the backend
+        sig = "";
         if (data.predicted_class) {
             // Update the result preview with the predicted class
-            document.getElementById("result-preview-text").textContent = "Predicted Class: " + data.predicted_class;
+            if (data.predicted_class == "0") {
+                sig = "fall";
+                alert("Falling situation detected!")
+            }
+            else if (data.predicted_class == "1") {
+                sig = "normal"
+            }
+            else {
+                sig = "violence"
+                alert("Violent situation detected!")
+            }
+
+            document.getElementById("result-preview-text").textContent = "Predicted Result: " + sig;
         }
     })
     .catch(error => {
@@ -307,18 +313,15 @@ function dataURLtoBlob(dataURL) {
 }
 
 
-    // 当用户点击"Detect"按钮时触发
     document.getElementById("detect-button").addEventListener("click", function () {
-        // 每秒执行一次captureAndDisplayImage函数
+
         const intervalId = setInterval(captureAndSendImage, 2000);
 
-        // 隐藏"Detect"按钮，显示"Stop"按钮
         document.getElementById("detect-button").style.display = "none";
         document.getElementById("stop-button").style.display = "block";
 
-        // 当用户点击"Stop"按钮时停止计时器
         document.getElementById("stop-button").addEventListener("click", function () {
-            clearInterval(intervalId); // 停止计时器
+            clearInterval(intervalId);
             document.getElementById("detect-button").style.display = "block";
             document.getElementById("stop-button").style.display = "none";
         });
