@@ -1,21 +1,12 @@
 # Apollolume
-- [Installation and User Guide](#1)
-  - [Introduction](#introduction)
-  - [Installation](#installation)
-  - [Overview](#overview)
-  - [Services](#services)
-    - [Picture Enhancer](#part-1)
-    - [Video Enhancer](#part-2)
-    - [Real-time camera Enhancer and violence detection](#part-3)
 
+## Installation and User Guide
 
-<h2 id="1">Installation and User Guide</h2>
-
-### Introduction {#introduction}
+### Introduction
 
 Apollolume is a web-based intelligent system application that helps users enhance photos or videos taken at night or in low-light conditions. Besides that, it also provides powerful real-time camera enhancement together with violence detection. The purpose of this Installation and User Guide is to help users successfully get into our application and understand how to use our application.
 
-### Installation {#installation}
+### Installation
 
 If you want to use our page locally on your computer, before running our website, your environment will need to have Python version 3.11.6 or higher, and the following essential libraries installed:
 
@@ -41,7 +32,7 @@ After that, please download our project file, and then open a terminal, and here
 
 In the terminal it will tell you which host it uses (usually the http://127.0.0.1:5001/). Then open a browser and type in the corresponding port number and you will get into our project locally.
 
-### Overview {#overview}
+### Overview
 
 Overall we have 3 sections on our page (also as you can see in the navigation bar on top of the website). The first section you see when you first get into our page is the home page section:
 
@@ -61,9 +52,9 @@ Next, if you keep scrolling down or click on the "Services" in our navigation ba
 
 For the following part of the User Guide, we will emphasize and illustrate every detail of how to use everything in our Services section.
 
-### Services {#services}
+### Services
 
-#### Picture Enhancer {#part-1}
+#### Picture Enhancer
 
 This is the default function area of our page. As you can see the "picture" button is pre-selected, so here it shows the first function of our application: Picture Enhancer.
 
@@ -77,7 +68,7 @@ The second component is the image file input field (2). Here there is an upload 
 
 The third component is the "CONVERT" button (3). After our users upload their image input file, they can click the convert button and wait for seconds depending on the file size and the complexity of the image, and finally, the enhanced result image will be shown in the fourth component area (4).
 
-#### Video Enhancer {#part-2}
+#### Video Enhancer
 
 After part 1, we will have another service which is Video Enhancer:
 
@@ -85,7 +76,7 @@ After part 1, we will have another service which is Video Enhancer:
 
 It is the same format as the Picture Enhancer. Here on the left is the area for users to upload their video files (1). After uploading, our users can click the convert button (2), and the enhanced video will be shown on the right side (3).
 
-#### Real-time camera Enhancer and violence detection {#part-3}
+#### Real-time camera Enhancer and violence detection
 
 After the Video Enhancer service, next is the last part of our service, Real-time camera Enhancer and violence detection:
 
