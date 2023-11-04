@@ -13,7 +13,7 @@ import os
 import logging
 from poseDetect.skeletion.test import process_image
 from poseDetect.pose_test import preprocess_image
-from poseDetect.CustomResNet import ResNet101, ResNet18
+from poseDetect.CustomResNet import ResNet101, ResNet18, ResNet34
 
 app = Flask(__name__)
 
@@ -150,8 +150,8 @@ def detect():
         torch.hub.set_dir(download_path)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # model = CustomDeepModel(num_classes=3)
-        model = ResNet18(num_classes=3).to(device)
-        model.load_state_dict(torch.load('poseDetect/model_Resnet18_best.pth', map_location=torch.device('cpu')))
+        model = ResNet34(num_classes=3).to(device)
+        model.load_state_dict(torch.load('poseDetect/model_Resnet34mini_best.pth', map_location=torch.device('cpu')))
         model=model.to(device)
         model.eval()
 
