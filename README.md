@@ -1,4 +1,4 @@
-# Table of Contents
+# Apollolume
 - [Installation and User Guide](#installation-and-user-guide)
   - [Introduction](#introduction)
   - [Installation](#installation)
