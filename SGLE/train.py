@@ -70,7 +70,6 @@ class Trainer():
         self.net.train()
 
         for epoch in range(self.num_epochs):
-            print("Number of epoch: ", epoch)
 
             for iteration, img_lowlight in enumerate(self.train_loader):
 
@@ -86,7 +85,7 @@ class Trainer():
                 if ((iteration + 1) % self.display_iter) == 0:
                     print("Loss at iteration", iteration + 1, ":", loss.item())
                 if ((iteration + 1) % self.snapshot_iter) == 0:
-                    torch.save(self.net.state_dict(), self.snapshots_folder + 'model.pth')
+                    torch.save(self.net.state_dict(), self.snapshots_folder + "Epoch" + str(epoch) + '.pth')
 
 
 
