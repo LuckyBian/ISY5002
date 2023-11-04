@@ -1,5 +1,5 @@
-<h2 id="1">Apollolume</h2>
-- [Installation and User Guide](#installation-and-user-guide)
+# Apollolume
+- [Installation and User Guide](#1)
   - [Introduction](#introduction)
   - [Installation](#installation)
   - [Overview](#overview)
@@ -9,7 +9,7 @@
     - [Real-time camera Enhancer and violence detection](#part-3)
 
 
-## Installation and User Guide {#installation-and-user-guide}
+<h2 id="1">Installation and User Guide</h2>
 
 ### Introduction {#introduction}
 
