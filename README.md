@@ -1,4 +1,4 @@
-# Apollolume
+<h2 id="1">Apollolume</h2>
 - [Installation and User Guide](#installation-and-user-guide)
   - [Introduction](#introduction)
   - [Installation](#installation)
