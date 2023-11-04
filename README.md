@@ -1,12 +1,6 @@
 # Apollolume
 
-## Installation and User Guide
-
-### Introduction
-
-Apollolume is a web-based intelligent system application that helps users enhance photos or videos taken at night or in low-light conditions. Besides that, it also provides powerful real-time camera enhancement together with violence detection. The purpose of this Installation and User Guide is to help users successfully get into our application and understand how to use our application.
-
-### Contributors
+## Contributors
 
 | Full Name     | Student ID  |
 | -------------  | ----------  |
@@ -15,6 +9,14 @@ Apollolume is a web-based intelligent system application that helps users enhanc
 | Lai Weichih   | A0285875H   |
 | Fang Ruolin   | A0285983H   |
 | Bian Weizhen  | A0285983H   |
+
+## Installation and User Guide
+
+### Introduction
+
+Apollolume is a web-based intelligent system application that helps users enhance photos or videos taken at night or in low-light conditions. Besides that, it also provides powerful real-time camera enhancement together with violence detection. The purpose of this Installation and User Guide is to help users successfully get into our application and understand how to use our application.
+
+
 
 ### Installation
 
