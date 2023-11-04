@@ -6,6 +6,16 @@
 
 Apollolume is a web-based intelligent system application that helps users enhance photos or videos taken at night or in low-light conditions. Besides that, it also provides powerful real-time camera enhancement together with violence detection. The purpose of this Installation and User Guide is to help users successfully get into our application and understand how to use our application.
 
+### Contributors
+
+| Full Name     | Student ID  |
+| -------------  | ----------  |
+| Liu Siyan     | A0285857H   |
+| Lin Zijun     | A0285897Y   |
+| Lai Weichih   | A0285875H   |
+| Fang Ruolin   | A0285983H   |
+| Bian Weizhen  | A0285983H   |
+
 ### Installation
 
 If you want to use our page locally on your computer, before running our website, your environment will need to have Python version 3.11.6 or higher, and the following essential libraries installed:
